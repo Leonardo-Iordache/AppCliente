@@ -5,12 +5,12 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
+import android.widget.Toast
 import com.example.appcliente.databinding.ActivityRegisterBinding
 import com.example.appcliente.R
 import com.example.appcliente.responses.UserResponse
 import com.example.appcliente.login.LogInActivity
 import com.example.appcliente.server.RestAPIService
-import com.google.gson.Gson
 
 class RegisterActivity : AppCompatActivity() {
     private lateinit var binding: ActivityRegisterBinding
@@ -64,18 +64,18 @@ class RegisterActivity : AppCompatActivity() {
                 dniInput.text.toString()
             )
 
-            apiService.getSomething()
-
-            /*apiService.addUser(userResponse){
-                if(it?.id == null){
-                    Log.d(this.javaClass.name, "Error al registrar el usuario")
-                }
-                else{
-                    Log.d(this.javaClass.name, "Registrado correctamente")
-                }
-            }*/
-            val intent = Intent(this, LogInActivity::class.java)
-            startActivity(intent)
+            apiService.addUser(userResponse, onResult = {
+                Toast.makeText(applicationContext, "Usuario creado con exito!!", Toast.LENGTH_SHORT)
+                    .show()
+                val intent = Intent(this, LogInActivity::class.java)
+                startActivity(intent)
+            }, onFailure = {
+                Toast.makeText(applicationContext, "Error al crear el usuario", Toast.LENGTH_SHORT)
+                    .show()
+            })
+        }
+        else{
+            Toast.makeText(applicationContext, "Las contraseñas deben coincidir", Toast.LENGTH_SHORT).show()
         }
     }
 }

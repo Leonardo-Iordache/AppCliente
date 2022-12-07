@@ -7,15 +7,19 @@ data class UserResponse(
     @SerializedName("ID")
     @Expose
     var id: String,
+
     @SerializedName("contraseña")
     @Expose
     var password: String,
+
     @SerializedName("nombre")
     @Expose
     var name: String,
+
     @SerializedName("apellido")
     @Expose
     var lastName: String,
+
     @SerializedName("DNI")
     @Expose
     var dni: String,

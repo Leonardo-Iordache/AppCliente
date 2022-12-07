@@ -17,11 +17,11 @@ interface ClientService {
     @POST("ServidorUbicua-0.0.1-SNAPSHOT/EstadoBuzon/")
     suspend fun createNewUser(@Body requestBody: UserResponse): Response<UserResponse>
 
-    //metodo para coger los
-    @POST("ServidorUbicua-0.0.1-SNAPSHOT/...")
-    suspend fun getPackageByID(@Url url: String): Response<Paquete>
+    //metodo para validar un login
+    @POST("ServidorUbicua-0.0.1-SNAPSHOT/ValidarUsuario")
+    suspend fun validateUser(@Query("id") idCliente: Int, @Query("contraseña") password: String): Response<Paquete>
 
-    //metodo para coger todos los paquetes de un repartidor
-    @POST("/paquetes")
+    //metodo para coger todos los paquetes de un cliente
+    @POST("ServidorUbicua-0.0.1-SNAPSHOT/Paquetes")
     suspend fun getPackages(@Query("id") idRepartidor: Int): Response<ArrayList<Paquete>>
 }

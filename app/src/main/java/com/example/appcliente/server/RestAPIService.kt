@@ -1,16 +1,21 @@
 package com.example.appcliente.server
 
 import android.util.Log
+import android.widget.Toast
 import com.example.appcliente.responses.Paquete
 import com.example.appcliente.responses.UserResponse
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import org.json.JSONObject
+import org.json.JSONTokener
+import java.util.*
+import kotlin.collections.ArrayList
 
 class RestAPIService {
-    private val serverURL = "http://192.168.1.129:8080/"
+    private val serverURL = "http://25.60.44.198:8080/"
 
-    /*private fun searchUserByID(retrofit: Retrofit, serverURL: String, userResponse: UserResponse): UserResponse {
+    /*fun searchUserByID(retrofit: Retrofit, serverURL: String, userResponse: UserResponse): UserResponse {
         CoroutineScope(Dispatchers.IO).launch {
             val id: Int
             val call =
@@ -33,19 +38,30 @@ class RestAPIService {
 
 
     //añade un nuevo usuario a los
-    fun addUser(userData: UserResponse, onResult: (UserResponse?) -> Unit) {
+    fun addUser(userData: UserResponse, onResult: (UserResponse?) -> Unit, onFailure: (UserResponse?) -> Unit) {
         CoroutineScope(Dispatchers.IO).launch {
             val retrofit = ServiceBuilder.buildService(ClientService::class.java)
             val call = retrofit.createNewUser(userData)
             val response = call.body()
-
             if (call.isSuccessful) {
                 Log.d(this.javaClass.name, "Correcto")
-                //onResult(response)
             } else {
                 Log.d(this.javaClass.name, "Error en POST:${serverURL}")
             }
         }
+    }
+
+    fun validateUser(userID: Int, userPassword: String): Boolean{
+        var result: Boolean = false
+        CoroutineScope(Dispatchers.IO).launch {
+            val retrofit = ServiceBuilder.buildService(ClientService::class.java)
+            val call = retrofit.validateUser(userID, userPassword)
+            val response = call.body()
+            if(call.isSuccessful){
+                result = true
+            }
+        }
+        return result
     }
 
     //funcion de prueba para un GET
@@ -67,16 +83,17 @@ class RestAPIService {
 
     fun getAllPackages(id: Int): ArrayList<Paquete>{
         val paqueteTemporal: ArrayList<Paquete> = ArrayList()
-
         CoroutineScope(Dispatchers.IO).launch {
             val retrofit = ServiceBuilder.buildService(ClientService::class.java)
             val call = retrofit.getPackages(id)
             val response = call.body()
-            paqueteTemporal.add(Paquete(1, 1, "coso"))
-
             if(call.isSuccessful){
                 //TODO: coger los datos del array json y meterlos en una clase -> guardarlos en un arraylist
-                //cast from string to arrayjson
+                response?.let {
+                    for(i in it){
+                        paqueteTemporal.add(i)
+                    }
+                }
             }
             else{
                 Log.d(this.javaClass.name, "Error en getAllPackages: $serverURL")
