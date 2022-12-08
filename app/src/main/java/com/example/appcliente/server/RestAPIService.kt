@@ -1,5 +1,6 @@
 package com.example.appcliente.server
 
+import android.content.Context
 import android.util.Log
 import android.widget.Toast
 import com.example.appcliente.responses.Paquete
@@ -36,27 +37,30 @@ class RestAPIService {
         }
     }*/
 
-
     //añade un nuevo usuario a los
-    fun addUser(userData: UserResponse, onResult: (UserResponse?) -> Unit, onFailure: (UserResponse?) -> Unit) {
+    fun addUser(userData: UserResponse, context: Context){
         CoroutineScope(Dispatchers.IO).launch {
             val retrofit = ServiceBuilder.buildService(ClientService::class.java)
             val call = retrofit.createNewUser(userData)
-            val response = call.body()
             if (call.isSuccessful) {
+                Toast.makeText(
+                    context, "Usuario registrado con exito!!", Toast.LENGTH_SHORT
+                ).show()
                 Log.d(this.javaClass.name, "Correcto")
             } else {
+                Toast.makeText(
+                    context, "Error al registrar el usuario", Toast.LENGTH_SHORT
+                ).show()
                 Log.d(this.javaClass.name, "Error en POST:${serverURL}")
             }
         }
     }
 
     fun validateUser(userID: Int, userPassword: String): Boolean{
-        var result: Boolean = false
+        var result = false
         CoroutineScope(Dispatchers.IO).launch {
             val retrofit = ServiceBuilder.buildService(ClientService::class.java)
             val call = retrofit.validateUser(userID, userPassword)
-            val response = call.body()
             if(call.isSuccessful){
                 result = true
             }
@@ -88,7 +92,6 @@ class RestAPIService {
             val call = retrofit.getPackages(id)
             val response = call.body()
             if(call.isSuccessful){
-                //TODO: coger los datos del array json y meterlos en una clase -> guardarlos en un arraylist
                 response?.let {
                     for(i in it){
                         paqueteTemporal.add(i)
@@ -101,4 +104,8 @@ class RestAPIService {
         }
         return paqueteTemporal
     }
+
+
+
+
 }

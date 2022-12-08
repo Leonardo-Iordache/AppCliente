@@ -26,9 +26,7 @@ class LogInActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_log_in)
         binding = ActivityLogInBinding.inflate(layoutInflater)
-
         logInButton = binding.logInButtonIniciarSesionActivity
-
         logInButton.setOnClickListener {
             userID = binding.userIDtext.text.toString()
             userPassword = binding.userPassword.text.toString()

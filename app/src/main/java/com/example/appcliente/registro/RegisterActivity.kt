@@ -16,14 +16,12 @@ class RegisterActivity : AppCompatActivity() {
     private lateinit var binding: ActivityRegisterBinding
     private lateinit var returnButton: Button
     private lateinit var registerButton: Button
-
-    private lateinit var nameInput: EditText
-    private lateinit var lastNameInput: EditText
-    private lateinit var dniInput: EditText
-    private lateinit var id: EditText
-    private lateinit var passwordInput: EditText
-    private lateinit var confirmPasswordInput: EditText
-
+    private lateinit var nameInput: String
+    private lateinit var lastNameInput: String
+    private lateinit var dniInput: String
+    private lateinit var id: String
+    private lateinit var passwordInput: String
+    private lateinit var confirmPasswordInput: String
     private val apiService = RestAPIService()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -34,12 +32,6 @@ class RegisterActivity : AppCompatActivity() {
         binding.let {
             returnButton = it.returnButton
             registerButton = it.registerButton
-            nameInput = it.nameText
-            lastNameInput = it.lastNameText
-            dniInput = it.dniText
-            id = it.idText
-            passwordInput = it.password
-            confirmPasswordInput = it.confirmPassword
         }
 
         returnButton.setOnClickListener {
@@ -47,35 +39,33 @@ class RegisterActivity : AppCompatActivity() {
         }
 
         registerButton.setOnClickListener {
+            binding.let {
+                nameInput = it.nameText.text.toString()
+                lastNameInput = it.lastNameText.text.toString()
+                dniInput = it.dniText.text.toString()
+                id = it.idText.text.toString()
+                passwordInput = it.password.text.toString()
+                confirmPasswordInput = it.confirmPassword.text.toString()
+            }
             completeRegistration()
         }
-
         setContentView(binding.root)
     }
 
 
     private fun completeRegistration() {
-        if (passwordInput.text.toString() == confirmPasswordInput.text.toString()) {
+        if (passwordInput == confirmPasswordInput) {
             val userResponse = UserResponse(
-                id.text.toString(),
-                passwordInput.text.toString(),
-                nameInput.text.toString(),
-                lastNameInput.text.toString(),
-                dniInput.text.toString()
+                id, passwordInput, nameInput, lastNameInput, dniInput
             )
+            apiService.addUser(userResponse, applicationContext)
+            val intent = Intent(this, LogInActivity::class.java)
+            startActivity(intent)
 
-            apiService.addUser(userResponse, onResult = {
-                Toast.makeText(applicationContext, "Usuario creado con exito!!", Toast.LENGTH_SHORT)
-                    .show()
-                val intent = Intent(this, LogInActivity::class.java)
-                startActivity(intent)
-            }, onFailure = {
-                Toast.makeText(applicationContext, "Error al crear el usuario", Toast.LENGTH_SHORT)
-                    .show()
-            })
-        }
-        else{
-            Toast.makeText(applicationContext, "Las contraseñas deben coincidir", Toast.LENGTH_SHORT).show()
+        } else {
+            Toast.makeText(
+                applicationContext, "Las contraseñas deben coincidir", Toast.LENGTH_SHORT
+            ).show()
         }
     }
 }
