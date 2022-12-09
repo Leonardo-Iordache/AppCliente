@@ -3,7 +3,7 @@ package com.example.appcliente.responses
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 
-data class UserResponse(
+data class UserLogin(
     @SerializedName("id")
     @Expose
     val id: Int,
@@ -16,25 +16,20 @@ data class UserResponse(
     @Expose
     val nombre: String,
 
-    @SerializedName("contrasena")
-    @Expose
-    val contrasena: String,
-
     @SerializedName("apellidos")
     @Expose
     val apellidos: String,
 
+    @SerializedName("contrasena")
+    @Expose
+    val contrasena: String,
+
     @SerializedName("dni")
     @Expose
-    val dni: String,
-
-    @SerializedName("direccion")
-    @Expose
-    val direccion: String
+    val dni: String
 ){
+
     override fun toString(): String {
-        return "UserResponse(id=$id, usuario='$usuario', nombre='$nombre', contrasena='$contrasena', apellidos='$apellidos', dni='$dni', direccion='$direccion')"
+        return "UserLogin(id=$id, usuario='$usuario', nombre='$nombre', apellidos='$apellidos', contrasena='$contrasena', dni='$dni')"
     }
 }
-
-

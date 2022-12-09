@@ -7,9 +7,9 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 object ServiceBuilder {
-    private const val serverURL = "http://192.168.1.120:8080/"
-    private val client = OkHttpClient.Builder().build()
-    private val gson: Gson = GsonBuilder().setLenient().create()
+    private const val serverURL = "http://192.168.225.129:8080/"
+    private val client = OkHttpClient.Builder().build();
+    private val gson: Gson = GsonBuilder().create()
 
     private val retrofit = Retrofit.Builder()
         .baseUrl(serverURL)
