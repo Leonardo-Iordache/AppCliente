@@ -33,6 +33,6 @@ interface ClientService {
     @GET("ServidorUbicua-0.0.1-SNAPSHOT/Paquetes")
     suspend fun getPackages(@Query("id") idRepartidor: Int): Response<ArrayList<Paquete>>
 
-    @POST("ServidorUbicua-0.0.1-SNAPSHOT/LogrosClientes")
+    @GET("ServidorUbicua-0.0.1-SNAPSHOT/LogrosClientes")
     suspend fun getLogros(@Query("id") idCliente: Int): Response<ArrayList<Logros>>
 }

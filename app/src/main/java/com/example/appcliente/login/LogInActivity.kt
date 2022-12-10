@@ -6,12 +6,14 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.Button
 import android.widget.Toast
+import androidx.lifecycle.lifecycleScope
 import com.example.appcliente.R
 import com.example.appcliente.databinding.ActivityLogInBinding
 import com.example.appcliente.mainscreen.MainScreenActivity
 import com.example.appcliente.responses.Paquete
 import com.example.appcliente.responses.UserLogin
 import com.example.appcliente.server.RestAPIService
+import kotlinx.coroutines.*
 
 
 class LogInActivity : AppCompatActivity() {
@@ -20,7 +22,8 @@ class LogInActivity : AppCompatActivity() {
     private lateinit var logInButton: Button
     private lateinit var userEmail: String
     private lateinit var userPassword: String
-    private lateinit var paquetes: ArrayList<Paquete>
+    private var job: Job = Job()
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,12 +39,17 @@ class LogInActivity : AppCompatActivity() {
     }
 
     private fun completeLogIn() {
+        var userLogin = 0
         Log.d(this.javaClass.name, userEmail + userPassword)
-        val userLogin = apiService.validateUser(userEmail, userPassword)
-        val intent = Intent(this, MainScreenActivity::class.java)
-        intent.putExtra("usuario", userLogin.toString())
-        startActivity(intent)
-
-        //Toast.makeText(applicationContext, "Credenciales invalidas", Toast.LENGTH_SHORT).show()
+        runBlocking {
+            job = launch {
+                userLogin = apiService.validateUser(userEmail, userPassword)
+            }
+        }
+       job.invokeOnCompletion {
+           val intent = Intent(this, MainScreenActivity::class.java)
+           intent.putExtra("usuario", userLogin.toString())
+           startActivity(intent)
+       }
     }
 }

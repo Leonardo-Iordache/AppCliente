@@ -19,6 +19,7 @@ import com.example.appcliente.databinding.MainScreenBinding
 import com.example.appcliente.mqtt.MqttClient
 import com.example.appcliente.responses.Paquete
 import com.example.appcliente.server.RestAPIService
+import kotlinx.coroutines.*
 import org.eclipse.paho.client.mqttv3.*
 
 class MainScreenActivity : AppCompatActivity() {
@@ -27,7 +28,9 @@ class MainScreenActivity : AppCompatActivity() {
     private val CHANNEL_ID = "clienteID"
     private var mqttClient = MqttClient(this)
     private val apiService = RestAPIService()
-    private var paquetes = ArrayList<Paquete>()
+    private lateinit var paquetes: ArrayList<Paquete>
+    private var job:Job = Job()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.main_screen)
@@ -35,41 +38,52 @@ class MainScreenActivity : AppCompatActivity() {
         logrosButon = binding.botonLogros
         val recyclerViewPaquete = findViewById<View>(R.id.recycler_viewPaquetes) as RecyclerView
         val user = intent.extras?.getString("usuario")
-        if (user != null) {
-            paquetes = apiService.getAllPackages(user.toInt())
 
+        if (user != null) {
+            runBlocking {
+                job = launch {
+                    paquetes = apiService.getAllPackages(user.toInt())
+                }
+            }
             Log.d(this.javaClass.name, user)
         }
 
-        val adapter = MainScreenAdapter(paquetes)
-        recyclerViewPaquete.adapter = adapter
-        recyclerViewPaquete.layoutManager = LinearLayoutManager(this)
+        job.invokeOnCompletion {
+            val adapter = MainScreenAdapter(paquetes)
+            recyclerViewPaquete.adapter = adapter
+            recyclerViewPaquete.layoutManager = LinearLayoutManager(this)
 
-        val defaultCbClient = object : MqttCallback {
-            override fun messageArrived(topic: String?, message: MqttMessage?) {
-                Log.d(this.javaClass.name, "Receive message: ${message.toString()} from topic: $topic")
-                createNotificationChannel()
-                createNotification("Tu paquete ha sido entregado", textContent = message.toString())
+            val defaultCbClient = object : MqttCallback {
+                override fun messageArrived(topic: String?, message: MqttMessage?) {
+                    Log.d(
+                        this.javaClass.name, "Receive message: ${message.toString()} from topic: $topic"
+                    )
+                    createNotificationChannel()
+                    createNotification("Tu paquete ha sido entregado", textContent = message.toString())
+                }
+
+                override fun connectionLost(cause: Throwable?) {
+                    Log.d(this.javaClass.name, "Connection lost ${cause.toString()}")
+                    Toast.makeText(applicationContext, "Conexión perdida con MQTT", Toast.LENGTH_SHORT)
+                        .show()
+                }
+
+                override fun deliveryComplete(token: IMqttDeliveryToken?) {
+                    Log.d(this.javaClass.name, "Delivery completed")
+                }
             }
 
-            override fun connectionLost(cause: Throwable?) {
-                Log.d(this.javaClass.name, "Connection lost ${cause.toString()}")
-                Toast.makeText(applicationContext, "Conexión perdida con MQTT", Toast.LENGTH_SHORT).show()
-            }
+            mqttClient.connect(cbClient = defaultCbClient)
 
-            override fun deliveryComplete(token: IMqttDeliveryToken?) {
-                Log.d(this.javaClass.name, "Delivery completed")
+            logrosButon.setOnClickListener {
+                val intent = Intent(this, LogrosActivity::class.java)
+                intent.putExtra("idUsuario", user.toString())
+                startActivity(intent)
             }
         }
-
-        mqttClient.connect(cbClient = defaultCbClient)
-
-        logrosButon.setOnClickListener {
-            val intent = Intent(this, LogrosActivity::class.java)
-            intent.putExtra("idUsuario", user.toString())
-            startActivity(intent)
-        }
+        setContentView(binding.root)
     }
+
 
     fun createNotificationChannel() {
         val name = "nuevo paquete"
@@ -84,13 +98,10 @@ class MainScreenActivity : AppCompatActivity() {
         notificationManager.createNotificationChannel(channel)
     }
 
-    fun createNotification(textTitle: String, textContent: String){
+    fun createNotification(textTitle: String, textContent: String) {
         val notification = NotificationCompat.Builder(this, CHANNEL_ID)
-            .setSmallIcon(androidx.core.R.drawable.notification_bg)
-            .setContentTitle(textTitle)
-            .setContentText(textContent)
-            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-            .build()
+            .setSmallIcon(androidx.core.R.drawable.notification_bg).setContentTitle(textTitle)
+            .setContentText(textContent).setPriority(NotificationCompat.PRIORITY_DEFAULT).build()
 
         with(NotificationManagerCompat.from(this)) {
             notify(0, notification)

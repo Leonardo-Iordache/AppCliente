@@ -1,21 +1,14 @@
 package com.example.appcliente.server
 
-import android.service.autofill.UserData
+
 import android.util.Log
 import com.example.appcliente.responses.Logros
 import com.example.appcliente.responses.Paquete
-import com.example.appcliente.responses.UserResponse
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import okhttp3.MultipartBody
-import java.util.*
 import kotlin.collections.ArrayList
-import okhttp3.MediaType.Companion.toMediaType
-import okhttp3.Headers.Companion.toHeaders
-import okhttp3.RequestBody.Companion.toRequestBody
-import org.json.JSONObject
+
 
 class RestAPIService {
     private val serverURL = "http://192.168.225.129:8080/"
@@ -42,7 +35,7 @@ class RestAPIService {
     }*/
 
     //añade un nuevo usuario a los
-    fun addUser(
+    suspend fun addUser(
         id: Int,
         usuario: String,
         nombre: String,
@@ -51,30 +44,26 @@ class RestAPIService {
         dni: String,
         direccion: String
     ) {
-        CoroutineScope(Dispatchers.IO).launch {
-            val retrofit = ServiceBuilder.buildService(ClientService::class.java)
-            val call =
-                retrofit.createNewUser(id, usuario, nombre, contrasena, apellidos, dni, direccion)
-            val response = call.body()
-            Log.d(this.javaClass.name, "AddUser: $response")
-            if (response == 0) {
-                Log.d(this.javaClass.name, "Correcto")
-            } else {
-                Log.d(this.javaClass.name, "Error en POST:${serverURL} $call")
-            }
+        val retrofit = ServiceBuilder.buildService(ClientService::class.java)
+        val call =
+            retrofit.createNewUser(id, usuario, nombre, contrasena, apellidos, dni, direccion)
+        val response = call.body()
+        Log.d(this.javaClass.name, "AddUser: $response")
+        if (response == 0) {
+            Log.d(this.javaClass.name, "Correcto")
+        } else {
+            Log.d(this.javaClass.name, "Error en POST:${serverURL} $call")
         }
     }
 
-    fun validateUser(userEmail: String, userPassword: String): Int{
+    suspend fun validateUser(userEmail: String, userPassword: String): Int {
         var id = 0
-        CoroutineScope(Dispatchers.IO).launch {
-            val retrofit = ServiceBuilder.buildService(ClientService::class.java)
-            val call = retrofit.validateUser(userEmail, userPassword)
-            if (call.isSuccessful) {
-                val items = call.body()
-                id = items!!.id
-                Log.d(this.javaClass.name, id.toString())
-            }
+        val retrofit = ServiceBuilder.buildService(ClientService::class.java)
+        val call = retrofit.validateUser(userEmail, userPassword)
+        if (call.isSuccessful) {
+            val items = call.body()
+            id = items!!.id
+            Log.d(this.javaClass.name, id.toString())
         }
         return id
     }
@@ -95,29 +84,26 @@ class RestAPIService {
         }
     }
 
-    fun getAllPackages(id: Int): ArrayList<Paquete> {
+    suspend fun getAllPackages(id: Int): ArrayList<Paquete> {
         val paqueteTemporal: ArrayList<Paquete> = ArrayList()
-        CoroutineScope(Dispatchers.IO).launch {
-            val retrofit = ServiceBuilder.buildService(ClientService::class.java)
-            val call = retrofit.getPackages(id)
+        val retrofit = ServiceBuilder.buildService(ClientService::class.java)
+        val call = retrofit.getPackages(id)
+        if (call.isSuccessful) {
             val response = call.body()
-            if (call.isSuccessful) {
-                response?.let {
-                    for (i in it) {
-                        paqueteTemporal.add(i)
-                    }
+            response?.let {
+                for (i in it) {
+                    paqueteTemporal.add(i)
                 }
-            } else {
-                Log.d(this.javaClass.name, "Error en getAllPackages: $serverURL")
             }
+        } else {
+            Log.d(this.javaClass.name, "Error en getAllPackages: $serverURL")
         }
         return paqueteTemporal
     }
 
 
-    fun getLogros(id: Int): ArrayList<Logros> {
+    suspend fun getLogros(id: Int): ArrayList<Logros> {
         val logrosDesbloqueados: ArrayList<Logros> = ArrayList()
-        CoroutineScope(Dispatchers.IO).launch {
             val retrofit = ServiceBuilder.buildService(ClientService::class.java)
             val call = retrofit.getLogros(id)
             if (call.isSuccessful) {
@@ -130,9 +116,6 @@ class RestAPIService {
             } else {
                 Log.d(this.javaClass.name, "Error en getLogros: $serverURL")
             }
-        }
         return logrosDesbloqueados
     }
-
-
 }
