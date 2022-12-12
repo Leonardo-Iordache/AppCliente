@@ -42,6 +42,5 @@ class LogrosActivity : AppCompatActivity() {
             recyclerViewLogro.adapter = adapter
             recyclerViewLogro.layoutManager = LinearLayoutManager(this)
         }
-        //setContentView(binding.root)
     }
 }

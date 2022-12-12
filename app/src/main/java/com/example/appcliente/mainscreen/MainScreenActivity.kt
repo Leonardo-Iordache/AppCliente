@@ -34,7 +34,6 @@ class MainScreenActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.main_screen)
-        //binding = MainScreenBinding.inflate(layoutInflater)
         logrosButon = findViewById(R.id.botonLogros)
         val recyclerViewPaquete = findViewById<View>(R.id.recycler_viewPaquetes) as RecyclerView
         val user = intent.extras?.getString("usuario")
@@ -58,11 +57,23 @@ class MainScreenActivity : AppCompatActivity() {
 
             val defaultCbClient = object : MqttCallback {
                 override fun messageArrived(topic: String?, message: MqttMessage?) {
-                    Log.d(
-                        this.javaClass.name, "Receive message: ${message.toString()} from topic: $topic"
-                    )
+                    var codigo = "0"
+                    var buzon = "0"
+                    if (topic == "buzon"){
+                        buzon = message.toString()
+                        Log.d(
+                            this.javaClass.name, "Receive message: ${message.toString()} from topic: $topic"
+                        )
+                    }
+                    else if(topic == "codigo"){
+                        codigo = message.toString()
+                        Log.d(
+                            this.javaClass.name, "Receive message: ${message.toString()} from topic: $topic"
+                        )
+                    }
+
                     createNotificationChannel()
-                    createNotification("Tu paquete ha sido entregado", textContent = message.toString())
+                    createNotification("Tu paquete ha sido entregado, buzon: $buzon", textContent = codigo)
                 }
 
                 override fun connectionLost(cause: Throwable?) {
@@ -89,7 +100,7 @@ class MainScreenActivity : AppCompatActivity() {
 
     fun createNotificationChannel() {
         val name = "nuevo paquete"
-        val descriptionText = "tu paquete ya ha sido entregado!!!!"
+        val descriptionText = "tu paquete ya ha sido entregado"
         val importance = NotificationManager.IMPORTANCE_HIGH
         val channel = NotificationChannel(channelID, name, importance).apply {
             description = descriptionText
