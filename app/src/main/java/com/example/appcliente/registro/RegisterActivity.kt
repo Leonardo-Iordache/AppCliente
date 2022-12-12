@@ -27,6 +27,7 @@ class RegisterActivity : AppCompatActivity() {
     private lateinit var emailInput: String
     private val apiService = RestAPIService()
     private var job: Job = Job()
+    private val context = this
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -59,22 +60,21 @@ class RegisterActivity : AppCompatActivity() {
     }
 
 
-    private fun completeRegistration() {
+    private fun completeRegistration() = runBlocking {
         if (passwordInput == confirmPasswordInput) {
-            runBlocking {
-                job = launch {
-                    val userID = apiService.addUser(
-                        id.toInt(),
-                        emailInput,
-                        nameInput,
-                        passwordInput,
-                        lastNameInput,
-                        dniInput,
-                        direccionInput
-                    )
-                }
+            job = launch {
+                val userID = apiService.addUser(
+                    id.toInt(),
+                    emailInput,
+                    nameInput,
+                    passwordInput,
+                    lastNameInput,
+                    dniInput,
+                    direccionInput
+                )
             }
-            val intent = Intent(this, LogInActivity::class.java)
+            job.join()
+            val intent = Intent(context, LogInActivity::class.java)
             startActivity(intent)
         } else {
             Toast.makeText(

@@ -5,13 +5,9 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.widget.Button
-import android.widget.Toast
-import androidx.lifecycle.lifecycleScope
 import com.example.appcliente.R
 import com.example.appcliente.databinding.ActivityLogInBinding
 import com.example.appcliente.mainscreen.MainScreenActivity
-import com.example.appcliente.responses.Paquete
-import com.example.appcliente.responses.UserLogin
 import com.example.appcliente.server.RestAPIService
 import kotlinx.coroutines.*
 

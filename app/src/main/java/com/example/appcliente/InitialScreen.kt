@@ -15,12 +15,10 @@ class InitialScreen : AppCompatActivity() {
     private lateinit var logInButton: Button
     private lateinit var registerButton: Button
     private lateinit var binding: ActivityMainBinding
-    private val apiService = RestAPIService()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        apiService.getSomething()
         binding = ActivityMainBinding.inflate(layoutInflater)
 
         binding.let {

@@ -2,7 +2,7 @@ package com.example.appcliente.server
 
 
 import android.util.Log
-import com.example.appcliente.responses.Logros
+import com.example.appcliente.responses.Logro
 import com.example.appcliente.responses.Paquete
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -11,7 +11,7 @@ import kotlin.collections.ArrayList
 
 
 class RestAPIService {
-    private val serverURL = "http://192.168.225.129:8080/"
+    private val serverURL = "http://192.168.1.15:8080/"
 
     /*fun searchUserByID(retrofit: Retrofit, serverURL: String, userResponse: UserResponse): UserResponse {
         CoroutineScope(Dispatchers.IO).launch {
@@ -63,7 +63,7 @@ class RestAPIService {
         if (call.isSuccessful) {
             val items = call.body()
             id = items!!.id
-            Log.d(this.javaClass.name, id.toString())
+            Log.d(this.javaClass.name, "El id nuevo es: $id")
         }
         return id
     }
@@ -90,8 +90,10 @@ class RestAPIService {
         val call = retrofit.getPackages(id)
         if (call.isSuccessful) {
             val response = call.body()
+
             response?.let {
                 for (i in it) {
+                    Log.d(this.javaClass.name, i.toString())
                     paqueteTemporal.add(i)
                 }
             }
@@ -102,14 +104,15 @@ class RestAPIService {
     }
 
 
-    suspend fun getLogros(id: Int): ArrayList<Logros> {
-        val logrosDesbloqueados: ArrayList<Logros> = ArrayList()
+    suspend fun getLogros(id: Int): ArrayList<Logro> {
+        val logrosDesbloqueados: ArrayList<Logro> = ArrayList()
             val retrofit = ServiceBuilder.buildService(ClientService::class.java)
             val call = retrofit.getLogros(id)
             if (call.isSuccessful) {
                 val response = call.body()
                 response?.let {
                     for (i in it) {
+                        Log.d(this.javaClass.name, i.toString())
                         logrosDesbloqueados.add(i)
                     }
                 }

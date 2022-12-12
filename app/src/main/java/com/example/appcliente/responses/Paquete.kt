@@ -5,7 +5,7 @@ import com.google.gson.annotations.SerializedName
 import java.util.Date
 
 data class Paquete(
-    @SerializedName("id")
+    @SerializedName("idPaquete")
     @Expose
     val idPaquete: Int,
 
@@ -15,25 +15,33 @@ data class Paquete(
 
     @SerializedName("estado")
     @Expose
-    val estado: Boolean,
+    val estado: Int,
 
-    @SerializedName("fecha entrega")
+    @SerializedName("descuento")
     @Expose
-    val fechaEntrega: Date,
+    val descuento: Int,
 
-    @SerializedName("fecha recogida")
-    @Expose
-    val fechaRecogida: Date,
-
-    @SerializedName("id buzon")
+    @SerializedName("idBuzon")
     @Expose
     val idBuzon: Int,
 
-    @SerializedName("id cliente")
+    @SerializedName("idCliente")
     @Expose
     val idCliente: Int,
 
-    @SerializedName("id repartidor")
+    @SerializedName("idRepartidor")
     @Expose
     val idRepartidor: Int,
-)
+
+    @SerializedName("fechaEntrega")
+    @Expose
+    val fechaEntrega: String,
+
+    @SerializedName("fechaRecogida")
+    @Expose
+    val fechaRecogida: String
+){
+    override fun toString(): String {
+        return "Paquete(idPaquete=$idPaquete, direction='$direction', estado=$estado, descuento=$descuento, idBuzon=$idBuzon, idCliente=$idCliente, idRepartidor=$idRepartidor, fechaEntrega='$fechaEntrega', fechaRecogida='$fechaRecogida')"
+    }
+}

@@ -15,7 +15,7 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.appcliente.R
-import com.example.appcliente.databinding.MainScreenBinding
+//import com.example.appcliente.databinding.MainScreenBinding
 import com.example.appcliente.mqtt.MqttClient
 import com.example.appcliente.responses.Paquete
 import com.example.appcliente.server.RestAPIService
@@ -23,19 +23,19 @@ import kotlinx.coroutines.*
 import org.eclipse.paho.client.mqttv3.*
 
 class MainScreenActivity : AppCompatActivity() {
-    private lateinit var binding: MainScreenBinding
+    //private lateinit var binding: MainScreenBinding
     private lateinit var logrosButon: Button
-    private val CHANNEL_ID = "clienteID"
+    private val channelID = "clienteID"
     private var mqttClient = MqttClient(this)
     private val apiService = RestAPIService()
-    private lateinit var paquetes: ArrayList<Paquete>
+    lateinit var paquetes: ArrayList<Paquete>
     private var job:Job = Job()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.main_screen)
-        binding = MainScreenBinding.inflate(layoutInflater)
-        logrosButon = binding.botonLogros
+        //binding = MainScreenBinding.inflate(layoutInflater)
+        logrosButon = findViewById(R.id.botonLogros)
         val recyclerViewPaquete = findViewById<View>(R.id.recycler_viewPaquetes) as RecyclerView
         val user = intent.extras?.getString("usuario")
 
@@ -45,10 +45,13 @@ class MainScreenActivity : AppCompatActivity() {
                     paquetes = apiService.getAllPackages(user.toInt())
                 }
             }
-            Log.d(this.javaClass.name, user)
+            for (i in paquetes){
+                Log.d(this.javaClass.name, i.toString())
+            }
         }
 
         job.invokeOnCompletion {
+            Log.d(this.javaClass.name, "Paquetes cogidos")
             val adapter = MainScreenAdapter(paquetes)
             recyclerViewPaquete.adapter = adapter
             recyclerViewPaquete.layoutManager = LinearLayoutManager(this)
@@ -81,7 +84,6 @@ class MainScreenActivity : AppCompatActivity() {
                 startActivity(intent)
             }
         }
-        setContentView(binding.root)
     }
 
 
@@ -89,7 +91,7 @@ class MainScreenActivity : AppCompatActivity() {
         val name = "nuevo paquete"
         val descriptionText = "tu paquete ya ha sido entregado!!!!"
         val importance = NotificationManager.IMPORTANCE_HIGH
-        val channel = NotificationChannel(CHANNEL_ID, name, importance).apply {
+        val channel = NotificationChannel(channelID, name, importance).apply {
             description = descriptionText
         }
         // Register the channel with the system
@@ -99,7 +101,7 @@ class MainScreenActivity : AppCompatActivity() {
     }
 
     fun createNotification(textTitle: String, textContent: String) {
-        val notification = NotificationCompat.Builder(this, CHANNEL_ID)
+        val notification = NotificationCompat.Builder(this, channelID)
             .setSmallIcon(androidx.core.R.drawable.notification_bg).setContentTitle(textTitle)
             .setContentText(textContent).setPriority(NotificationCompat.PRIORITY_DEFAULT).build()
 
