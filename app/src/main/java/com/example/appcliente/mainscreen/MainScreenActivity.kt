@@ -20,7 +20,9 @@ import com.example.appcliente.mqtt.MqttClient
 import com.example.appcliente.responses.Paquete
 import com.example.appcliente.server.RestAPIService
 import kotlinx.coroutines.*
+import okhttp3.internal.wait
 import org.eclipse.paho.client.mqttv3.*
+import java.lang.Thread.sleep
 
 class MainScreenActivity : AppCompatActivity() {
     //private lateinit var binding: MainScreenBinding
@@ -34,6 +36,40 @@ class MainScreenActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.main_screen)
+        val defaultCbClient = object : MqttCallback {
+            override fun messageArrived(topic: String?, message: MqttMessage?) {
+                var codigo = "0"
+                var buzon = "0"
+                if (topic == "buzon/entregas"){
+                    buzon = message.toString()
+                    Log.d(
+                        this.javaClass.name, "Receive message: ${message.toString()} from topic: $topic"
+                    )
+                }
+                else if(topic == "codigo"){
+                    codigo = message.toString()
+                    Log.d(
+                        this.javaClass.name, "Receive message: ${message.toString()} from topic: $topic"
+                    )
+                }
+                Log.d(this.javaClass.name, "$topic")
+                Log.d(this.javaClass.name, "Mensaje recibido")
+
+                createNotificationChannel()
+                createNotification("Tu paquete ha sido entregado, buzon: $buzon", textContent = codigo)
+            }
+
+            override fun connectionLost(cause: Throwable?) {
+                Log.d(this.javaClass.name, "Connection lost ${cause.toString()}")
+                Toast.makeText(applicationContext, "Conexión perdida con MQTT", Toast.LENGTH_SHORT)
+                    .show()
+            }
+
+            override fun deliveryComplete(token: IMqttDeliveryToken?) {
+                Log.d(this.javaClass.name, "Delivery completed")
+            }
+        }
+
         logrosButon = findViewById(R.id.botonLogros)
         val recyclerViewPaquete = findViewById<View>(R.id.recycler_viewPaquetes) as RecyclerView
         val user = intent.extras?.getString("usuario")
@@ -49,45 +85,14 @@ class MainScreenActivity : AppCompatActivity() {
             }
         }
 
-        job.invokeOnCompletion {
+        job.invokeOnCompletion{
             Log.d(this.javaClass.name, "Paquetes cogidos")
+
+            mqttClient.connect(cbClient = defaultCbClient)
+
             val adapter = MainScreenAdapter(paquetes)
             recyclerViewPaquete.adapter = adapter
             recyclerViewPaquete.layoutManager = LinearLayoutManager(this)
-
-            val defaultCbClient = object : MqttCallback {
-                override fun messageArrived(topic: String?, message: MqttMessage?) {
-                    var codigo = "0"
-                    var buzon = "0"
-                    if (topic == "buzon"){
-                        buzon = message.toString()
-                        Log.d(
-                            this.javaClass.name, "Receive message: ${message.toString()} from topic: $topic"
-                        )
-                    }
-                    else if(topic == "codigo"){
-                        codigo = message.toString()
-                        Log.d(
-                            this.javaClass.name, "Receive message: ${message.toString()} from topic: $topic"
-                        )
-                    }
-
-                    createNotificationChannel()
-                    createNotification("Tu paquete ha sido entregado, buzon: $buzon", textContent = codigo)
-                }
-
-                override fun connectionLost(cause: Throwable?) {
-                    Log.d(this.javaClass.name, "Connection lost ${cause.toString()}")
-                    Toast.makeText(applicationContext, "Conexión perdida con MQTT", Toast.LENGTH_SHORT)
-                        .show()
-                }
-
-                override fun deliveryComplete(token: IMqttDeliveryToken?) {
-                    Log.d(this.javaClass.name, "Delivery completed")
-                }
-            }
-
-            mqttClient.connect(cbClient = defaultCbClient)
 
             logrosButon.setOnClickListener {
                 val intent = Intent(this, LogrosActivity::class.java)

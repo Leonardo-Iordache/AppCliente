@@ -8,6 +8,7 @@ import android.widget.Button
 import com.example.appcliente.R
 import com.example.appcliente.databinding.ActivityLogInBinding
 import com.example.appcliente.mainscreen.MainScreenActivity
+import com.example.appcliente.mqtt.MqttClient
 import com.example.appcliente.server.RestAPIService
 import kotlinx.coroutines.*
 
@@ -19,6 +20,7 @@ class LogInActivity : AppCompatActivity() {
     private lateinit var userEmail: String
     private lateinit var userPassword: String
     private var job: Job = Job()
+
 
 
     override fun onCreate(savedInstanceState: Bundle?) {

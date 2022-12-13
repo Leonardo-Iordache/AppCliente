@@ -24,13 +24,13 @@ interface ClientService {
     //metodo para validar un login
     @GET("ServidorUbicua-0.0.1-SNAPSHOT/ValidarCliente")
     suspend fun validateUser(
-        @Query("usuario") emailCliente: String,
-        @Query("contraseña") password: String
+        @Query("usuario") emailCliente: String = "usuarioCliente3",
+        @Query("contraseña") password: String = "contraseñaCliente3"
     ): Response<UserLogin>
 
     //metodo para coger todos los paquetes de un cliente
     @GET("ServidorUbicua-0.0.1-SNAPSHOT/PaquetesCliente")
-    suspend fun getPackages(@Query("id") idRepartidor: Int): Response<ArrayList<Paquete>>
+    suspend fun getPackages(@Query("id") idCliente: Int): Response<ArrayList<Paquete>>
 
     @GET("ServidorUbicua-0.0.1-SNAPSHOT/LogrosClientes")
     suspend fun getLogros(@Query("id") idCliente: Int): Response<ArrayList<Logro>>

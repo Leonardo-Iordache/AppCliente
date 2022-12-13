@@ -8,7 +8,7 @@ import org.eclipse.paho.client.mqttv3.MqttClient
 
 class MqttClient(
     context: Context?,
-    serverURI: String = "tcp://192.168.1.66:1883",
+    serverURI: String = "tcp://192.168.216.175:1883",
     clientID: String = MqttClient.generateClientId()
 ) {
     private var mqttClient = MqttAndroidClient(context, serverURI, clientID)
@@ -16,7 +16,7 @@ class MqttClient(
         override fun onSuccess(asyncActionToken: IMqttToken?) {
             Log.d(this.javaClass.name, "(Default) Connection Success")
             subscribe("notificacion")
-
+            subscribe("buzon/entregas")
         }
 
         override fun onFailure(asyncActionToken: IMqttToken?, exception: Throwable?) {
