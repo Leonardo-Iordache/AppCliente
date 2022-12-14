@@ -1,5 +1,6 @@
 package com.example.appcliente.mainscreen
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -36,8 +37,13 @@ class MainScreenAdapter(private val listaPaquetes: ArrayList<Paquete>) :
         textViewID.text = paquete.idPaquete.toString()
         textViewBuzon.text = paquete.idBuzon.toString()
 
-        if(textViewEstado.text.toString() == "1"){
+        Log.d(this.javaClass.name, "El paquete es: $paquete")
+
+        if(paquete.estado.toString() == "1"){
             textViewEstado.text = "Entregado"
+        }
+        else if(paquete.estado.toString() == "2"){
+            textViewEstado.text = "Recogido"
         }
         else{
             textViewEstado.text = "En reparto"

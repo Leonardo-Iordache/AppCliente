@@ -27,7 +27,8 @@ class LogrosAdapter(private val listaLogros: ArrayList<Logro>):
         val logro: Logro = listaLogros[position]
         val textViewID = holder.idLogro
         val textViewDescripcion = holder.descripicion
-        textViewID.text = logro.idLogros.toString()
+        textViewID.text = logro.id.toString()
+        textViewDescripcion.text = logro.descripcion.toString()
     }
 
     override fun getItemCount(): Int {

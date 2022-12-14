@@ -68,21 +68,7 @@ class RestAPIService {
         return id
     }
 
-    //funcion de prueba para un GET
-    fun getSomething() {
-        CoroutineScope(Dispatchers.IO).launch {
-            val retrofit = ServiceBuilder.buildService(ClientService::class.java)
-            val call = retrofit.getSomething()
 
-            if (call.isSuccessful) {
-                val response = call.body()
-                Log.d(this.javaClass.name, call.toString())
-                Log.d(this.javaClass.name, response.toString())
-            } else {
-                Log.d(this.javaClass.name, "Error en POST: $serverURL")
-            }
-        }
-    }
 
     suspend fun getAllPackages(id: Int): ArrayList<Paquete> {
         val paqueteTemporal: ArrayList<Paquete> = ArrayList()
@@ -120,5 +106,57 @@ class RestAPIService {
                 Log.d(this.javaClass.name, "Error en getLogros: $serverURL")
             }
         return logrosDesbloqueados
+    }
+
+    suspend fun getPaquetesEntregados(idCliente: Int): Int{
+        var paquetes = 0
+        val retrofit = ServiceBuilder.buildService(ClientService::class.java)
+        val call = retrofit.getPaquetesEntregados(idCliente)
+        if(call.isSuccessful){
+            val response = call.body()
+            if (response != null) {
+                paquetes = response.size
+            }
+        }
+        return paquetes
+    }
+
+    suspend fun getPaquetesRecogidos(idCliente: Int): Int{
+        var paquetes = 0
+        val retrofit = ServiceBuilder.buildService(ClientService::class.java)
+        val call = retrofit.getPaquetesRecogidos(idCliente)
+        if(call.isSuccessful){
+            val response = call.body()
+            if (response != null) {
+                paquetes = response.size
+            }
+        }
+        return paquetes
+    }
+
+    suspend fun getPaquetesReparto(idCliente: Int): Int{
+        var paquetes = 0
+        val retrofit = ServiceBuilder.buildService(ClientService::class.java)
+        val call = retrofit.getPaquetesReparto(idCliente)
+        if(call.isSuccessful){
+            val response = call.body()
+            if (response != null) {
+                paquetes = response.size
+            }
+        }
+        return paquetes
+    }
+
+    suspend fun getPedidosAcumulados(idCliente: Int): Int{
+        var paquetes = 0
+        val retrofit = ServiceBuilder.buildService(ClientService::class.java)
+        val call = retrofit.getPedidosAcumulados(idCliente)
+        if(call.isSuccessful){
+            val response = call.body()
+            if (response != null) {
+                paquetes = response.pedidosAcumulados
+            }
+        }
+        return paquetes
     }
 }

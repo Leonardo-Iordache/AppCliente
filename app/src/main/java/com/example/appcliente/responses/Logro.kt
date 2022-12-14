@@ -4,11 +4,15 @@ import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 
 data class Logro(
-    @SerializedName("idLogros")
+    @SerializedName("id")
     @Expose
-    val idLogros: Int,
+    val id: Int,
 
-    @SerializedName("idClientes")
+    @SerializedName("descripcion")
     @Expose
-    val idCliente: Int
+    val descripcion: String,
+
+    @SerializedName("estado")
+    @Expose
+    val estado: Boolean
 )

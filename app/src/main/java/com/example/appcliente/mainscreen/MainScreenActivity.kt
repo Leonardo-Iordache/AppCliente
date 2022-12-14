@@ -27,18 +27,19 @@ import java.lang.Thread.sleep
 class MainScreenActivity : AppCompatActivity() {
     //private lateinit var binding: MainScreenBinding
     private lateinit var logrosButon: Button
+    private lateinit var historicoButton: Button
     private val channelID = "clienteID"
     private var mqttClient = MqttClient(this)
     private val apiService = RestAPIService()
     lateinit var paquetes: ArrayList<Paquete>
     private var job:Job = Job()
+    private var codigo = "0"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.main_screen)
         val defaultCbClient = object : MqttCallback {
             override fun messageArrived(topic: String?, message: MqttMessage?) {
-                var codigo = "0"
                 var buzon = "0"
                 if (topic == "buzon/entregas"){
                     buzon = message.toString()
@@ -46,13 +47,13 @@ class MainScreenActivity : AppCompatActivity() {
                         this.javaClass.name, "Receive message: ${message.toString()} from topic: $topic"
                     )
                 }
-                else if(topic == "codigo"){
+                else if(topic == "buzon/codigo"){
                     codigo = message.toString()
                     Log.d(
-                        this.javaClass.name, "Receive message: ${message.toString()} from topic: $topic"
+                        this.javaClass.name, "Receive message: $codigo from topic: $topic"
                     )
                 }
-                Log.d(this.javaClass.name, "$topic")
+                Log.d(this.javaClass.name, codigo)
                 Log.d(this.javaClass.name, "Mensaje recibido")
 
                 createNotificationChannel()
@@ -71,6 +72,7 @@ class MainScreenActivity : AppCompatActivity() {
         }
 
         logrosButon = findViewById(R.id.botonLogros)
+        historicoButton = findViewById(R.id.botonHistorico)
         val recyclerViewPaquete = findViewById<View>(R.id.recycler_viewPaquetes) as RecyclerView
         val user = intent.extras?.getString("usuario")
 
@@ -96,6 +98,12 @@ class MainScreenActivity : AppCompatActivity() {
 
             logrosButon.setOnClickListener {
                 val intent = Intent(this, LogrosActivity::class.java)
+                intent.putExtra("idUsuario", user.toString())
+                startActivity(intent)
+            }
+
+            historicoButton.setOnClickListener {
+                val intent = Intent(this, HistoricoActivity::class.java)
                 intent.putExtra("idUsuario", user.toString())
                 startActivity(intent)
             }

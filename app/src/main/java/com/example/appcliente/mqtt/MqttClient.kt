@@ -15,7 +15,7 @@ class MqttClient(
     private val defaultCbConnect = object : IMqttActionListener {
         override fun onSuccess(asyncActionToken: IMqttToken?) {
             Log.d(this.javaClass.name, "(Default) Connection Success")
-            subscribe("notificacion")
+            subscribe("buzon/codigo")
             subscribe("buzon/entregas")
         }
 

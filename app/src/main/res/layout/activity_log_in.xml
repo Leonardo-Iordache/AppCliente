@@ -30,7 +30,7 @@
             android:layout_width="match_parent"
             android:layout_height="65dp"
             android:ems="10"
-            android:hint="Introduzca su correo de empleado"
+            android:hint="Introduzca su correo"
             android:inputType="textPersonName"
             android:textColorHint="#757575"
             android:autofillHints="" />

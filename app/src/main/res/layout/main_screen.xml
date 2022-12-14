@@ -19,8 +19,8 @@
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recycler_viewPaquetes"
-            android:layout_width="match_parent"
-            android:layout_height="677dp"
+            android:layout_width="398dp"
+            android:layout_height="597dp"
             app:layoutManager="LinearLayoutManager"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -32,6 +32,12 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Ver Logros" />
+
+        <Button
+            android:id="@+id/botonHistorico"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Historico" />
 
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
